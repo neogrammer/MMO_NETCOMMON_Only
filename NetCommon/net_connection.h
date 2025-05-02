@@ -1,10 +1,12 @@
 #ifndef NET_CONNECTION_H__
 #define NET_CONNECTION_H__
 
+
+#include <cstdlib>
 #include "net_common.h"
 #include "net_tsqueue.h"
 #include "net_message.h"
-
+#include "net_server.h"
 
 namespace cnet
 {
@@ -296,9 +298,9 @@ namespace cnet
 		// "Encrypt" data
 		uint64_t scramble(uint64_t nInput)
 		{
-			uint64_t out = nInput ^ 0xDEADBEEFCODECAFE;
+			uint64_t out = nInput ^ 0xDEADBEEFC0DECAFE;
 			out = (out & 0xF0F0F0F0F0F0F0) >> 4 | (out & 0x0F0F0F0F0F0F0F) << 4;
-			return out ^ 0xCODEFACE12345678;
+			return out ^ 0xC0DEFACE12345678;
 
 		}
 
@@ -310,13 +312,13 @@ namespace cnet
 					if (!ec)
 					{
 						if (m_nOwnerType == owner::client)
-							ReadHelper();
+							ReadHeader();
 					}
 					else
 					{
 						m_socket.close();
 					}
-				}
+				});
 		}
 
 		void ReadValidation(cnet::server_interface<T>* server = nullptr)
@@ -354,7 +356,7 @@ namespace cnet
 						std::cout << "Client Disconnected (ReadValidation)" << std::endl;
 						m_socket.close();
 					}
-				}
+				});
 		}
 
 
